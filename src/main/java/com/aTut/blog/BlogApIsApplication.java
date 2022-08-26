@@ -8,8 +8,9 @@ import org.springframework.context.annotation.Bean;
 
 
 @SpringBootApplication
-public class BlogApIsApplication {
+public class BlogApIsApplication{
 
+	
 	public static void main(String[] args) {
 		SpringApplication.run(BlogApIsApplication.class, args);
 	
@@ -20,6 +21,7 @@ public class BlogApIsApplication {
 		return new ModelMapper();
 	}
 	//TODO: getUserBYId and getCategorybyId - rename 
+
 	
 
 }
