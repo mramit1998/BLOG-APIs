@@ -24,4 +24,7 @@ public class Comment {
 	
 	@ManyToOne
 	private Post post;
+	
+	
+	private Integer user_commented;
 }

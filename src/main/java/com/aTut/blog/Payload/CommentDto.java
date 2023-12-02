@@ -11,4 +11,6 @@ public class CommentDto {
 	private int id;
 	
 	private String content;
+	
+	private Integer user_commented;
 }

@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import com.aTut.blog.Payload.CommentDto;
 import com.aTut.blog.entities.Comment;
 import com.aTut.blog.entities.Post;
+import com.aTut.blog.entities.User;
 import com.aTut.blog.exceptions.ResourceNotFoundException;
 import com.aTut.blog.repositories.CommentRepository;
 import com.aTut.blog.repositories.PostRepository;
+import com.aTut.blog.repositories.UserRepository;
 import com.aTut.blog.services.CommentServive;
 
 
@@ -21,6 +23,9 @@ public class CommentServiceImpl implements CommentServive {
 	
 	@Autowired
 	private CommentRepository commentRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -29,10 +34,12 @@ public class CommentServiceImpl implements CommentServive {
 		
 		Post post =this.postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "PostId", postId));
 		
+		@SuppressWarnings("unused")
+		User user = this.userRepository.findById(commentDto.getUser_commented()).orElseThrow(() -> new ResourceNotFoundException("User", "UserId", commentDto.getUser_commented()));
 		Comment comment = new Comment();
 		comment.setContent(commentDto.getContent());
 		comment.setPost(post);
-		
+		comment.setUser_commented(commentDto.getUser_commented());
 		Comment CreatedComment = this.commentRepository.save(comment);
 		
 		

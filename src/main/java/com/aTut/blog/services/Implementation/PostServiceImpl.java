@@ -13,9 +13,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.aTut.blog.Payload.CategoryDto;
 import com.aTut.blog.Payload.CommentDto;
 import com.aTut.blog.Payload.PostDto;
 import com.aTut.blog.Payload.PostResponse;
+import com.aTut.blog.Payload.UserDto;
 import com.aTut.blog.entities.Category;
 import com.aTut.blog.entities.Comment;
 import com.aTut.blog.entities.Post;
@@ -66,11 +68,11 @@ public class PostServiceImpl implements PostService {
 				.orElseThrow(() -> new ResourceNotFoundException("Post", "PostId", postId));
 		
 		
-		Category category = this.categoryRepo.findById(postDto.getCategoryId()).
-				orElseThrow(()-> new ResourceNotFoundException("Category ", "category id", postDto.getCategoryId()));
+		Category category = this.categoryRepo.findById(postDto.getCategoryDto().getCategoryId()).
+				orElseThrow(()-> new ResourceNotFoundException("Category ", "category id", postDto.getCategoryDto().getCategoryId()));
 		@SuppressWarnings("unused")
-		User user =  this.userRepo.findById(postDto.getUserId()).
-				orElseThrow(()-> new ResourceNotFoundException("user", "user id", postDto.getUserId()));
+		User user =  this.userRepo.findById(postDto.getUserDto().getId()).
+				orElseThrow(()-> new ResourceNotFoundException("user", "user id", postDto.getUserDto().getId()));
 		
 		post.setTitle(postDto.getTitle());
 		if(!postDto.getImageName().equals(""))
@@ -113,29 +115,63 @@ public class PostServiceImpl implements PostService {
 
 	// TODO: implement pagination and sorting in get post by user and getPost by category
 	@Override
-	public List<PostDto> getPostByUser(Integer userId) {
+	public PostResponse getPostByUser(Integer userId,Integer pageNumber, Integer pageSize,String sortBy,String sortDir) {
+		
+		
+		Sort sort = (sortDir.equalsIgnoreCase("asc"))? Sort.by(sortBy).ascending():  Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNumber, pageSize,sort);
 		User user = this.userRepo.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "User Id", userId));
 		List<Post> postByUser = this.postRepo.findByUser(user);
-		return postByUser.stream().map(post -> this.PostToDto(post)).collect(Collectors.toList());
+		
+		PostResponse postResponse = new PostResponse();
+		postResponse.setContent(postByUser.stream().map(post ->this.PostToDto(post)).collect(Collectors.toList()));
+		Page<Post> pagePost = this.postRepo.findAll(pageable);	
+		postResponse.setPageNumber(pagePost.getNumber());
+		postResponse.setTotalElements(pagePost.getTotalElements());
+		postResponse.setPageSize(pagePost.getSize());
+		postResponse.setTotalPages(pagePost.getTotalPages());
+		postResponse.setLastpage(pagePost.isLast());
+		
+		return postResponse;
 	}
 
 	@Override
-	public List<PostDto> getPostByCategory(Integer categoryId) {
-
+	public PostResponse getPostByCategory(Integer categoryId,Integer pageNumber, Integer pageSize,String sortBy,String sortDir) {
+		Sort sort = (sortDir.equalsIgnoreCase("asc"))? Sort.by(sortBy).ascending():  Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNumber, pageSize,sort);
 		Category category = this.categoryRepo.findById(categoryId)
 				.orElseThrow(() -> new ResourceNotFoundException("Category", "Category Id", categoryId));
 		List<Post> postByCategory = this.postRepo.findByCategory(category);
-
+		PostResponse postResponse = new PostResponse();
+		postResponse.setContent(postByCategory.stream().map(post ->this.PostToDto(post)).collect(Collectors.toList()));
+		Page<Post> pagePost = this.postRepo.findAll(pageable);	
+		postResponse.setPageNumber(pagePost.getNumber());
+		postResponse.setTotalElements(pagePost.getTotalElements());
+		postResponse.setPageSize(pagePost.getSize());
+		postResponse.setTotalPages(pagePost.getTotalPages());
+		postResponse.setLastpage(pagePost.isLast());
 		
-		return postByCategory.stream().map(post -> this.PostToDto(post) ).collect(Collectors.toList());
+		
+		return postResponse;
 	}
 
 	@Override
-	public List<PostDto> searchPosts(String keyword) {
+	public PostResponse searchPosts(String keyword,Integer pageNumber, Integer pageSize,String sortBy,String sortDir) {
 		List<Post> allPost= this.postRepo.searchTitleContaining("%" + keyword + "%");
 		
-		return allPost.stream().map(post-> this.PostToDto(post)).collect(Collectors.toList());
+		Sort sort = (sortDir.equalsIgnoreCase("asc"))? Sort.by(sortBy).ascending():  Sort.by(sortBy).descending();
+		Pageable pageable = PageRequest.of(pageNumber, pageSize,sort);
+		PostResponse postResponse = new PostResponse();
+		postResponse.setContent(allPost.stream().map(post ->this.PostToDto(post)).collect(Collectors.toList()));
+		Page<Post> pagePost = this.postRepo.findAll(pageable);	
+		postResponse.setPageNumber(pagePost.getNumber());
+		postResponse.setTotalElements(pagePost.getTotalElements());
+		postResponse.setPageSize(pagePost.getSize());
+		postResponse.setTotalPages(pagePost.getTotalPages());
+		postResponse.setLastpage(pagePost.isLast());
+		
+		return postResponse ;
 	}
 
 	
@@ -144,31 +180,35 @@ public class PostServiceImpl implements PostService {
 	private PostDto PostToDto(Post post) {
 		PostDto postdto = new PostDto();
 		
+		
+		
+		
 		postdto.setPostId(post.getPostId());
 		postdto.setTitle(post.getTitle());
 		postdto.setContent(post.getContent());
 		postdto.setAdded_date(post.getAdded_date());
 		postdto.setImageName(post.getImageName());
-		postdto.setCategoryId(post.getCategory().getCategoryId());
-		postdto.setUserId(post.getUser().getId());
-		postdto.setCategoryName(post.getCategory().getCategoryTitle());
-		postdto.setUserName(post.getUser().getName());
+		postdto.setCategoryDto(this.modelMapper.map(post.getCategory(),CategoryDto.class));
+		postdto.setUserDto(this.modelMapper.map(post.getUser(),UserDto.class));
+		
 		postdto.setComments(post.getComments().stream().map(comment -> this.modelMapper.map(comment, CommentDto.class)).collect(Collectors.toSet()));
-		;
 		
 		return postdto;
 	}
 	
 	
-	private Post DtoToPost(PostDto postdto) {
-		Post newPost = new Post();
-		Category category = this.categoryRepo.findById(postdto.getCategoryId()).
-				orElseThrow(()-> new ResourceNotFoundException("Category ", "category id", postdto.getCategoryId()));
-		User user =  this.userRepo.findById(postdto.getUserId()).
-				orElseThrow(()-> new ResourceNotFoundException("user", "user id", postdto.getUserId()));
+	private Post DtoToPost(PostDto postDto) {
 		
-		newPost.setTitle(postdto.getTitle());
-		newPost.setContent(postdto.getContent());
+		
+		Post newPost = new Post();
+		Category category = this.categoryRepo.findById(postDto.getCategoryDto().getCategoryId()).
+				orElseThrow(()-> new ResourceNotFoundException("Category ", "category id", postDto.getCategoryDto().getCategoryId()));
+	
+		User user =  this.userRepo.findById(postDto.getUserDto().getId()).
+				orElseThrow(()-> new ResourceNotFoundException("user", "user id", postDto.getUserDto().getId()));
+		
+		newPost.setTitle(postDto.getTitle());
+		newPost.setContent(postDto.getContent());
 		newPost.setCategory(category);
 		newPost.setUser(user);
 		//checking if postDto has comments

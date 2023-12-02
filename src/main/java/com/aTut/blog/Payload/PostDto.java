@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.validation.constraints.NotNull;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,20 +22,21 @@ public class PostDto {
 	private String imageName;
 	
 	private Date added_date;
-//private CategoryDto category;
-//
-//private UserDto user;
+	
+	private CategoryDto categoryDto;
 
-//categoryId
-	@NotNull
-	private Integer categoryId;
-//user id
-	@NotNull
-	private Integer userId;
+	private UserDto userDto;
+
+////categoryId
+//	@NotNull
+//	private Integer categoryId;
+////user id
+//	@NotNull
+//	private Integer userId;
 	
-	private String userName;
-	
-	private String categoryName;
+//	private String userName;
+//	
+//	private String categoryName;
 	
 	private Set<CommentDto> comments = new HashSet<>();
 }

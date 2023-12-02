@@ -1,9 +1,15 @@
 package com.aTut.blog.Payload;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import com.aTut.blog.entities.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +32,7 @@ public class UserDto {
 		@Pattern(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"+"[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$", message = "Email is not valid!!")
 		private String email; 
 		
+		@JsonIgnore
 		@NotEmpty
 		@Size(min = 8 , max = 15 , message = "Password Should be between 8 to 15 characters !!")
 		@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^^&*_])[a-zA-Z0-9!@#$%^&*]{8,15}$" ,
@@ -38,5 +45,8 @@ public class UserDto {
 		@Size(max = 100 , message ="Maximum length is 100 characters!!")
 		private String about;
 		
+		private Set<Role> roles= new HashSet<>();
+		
+
 		
 }

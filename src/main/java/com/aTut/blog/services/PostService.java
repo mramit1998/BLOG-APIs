@@ -1,7 +1,5 @@
 package com.aTut.blog.services;
 
-import java.util.List;
-
 import com.aTut.blog.Payload.PostDto;
 import com.aTut.blog.Payload.PostResponse;
 
@@ -26,11 +24,13 @@ public interface PostService {
 	
 	
 	//getAllpostbyuser
-	List<PostDto> getPostByUser(Integer userId);
+	PostResponse getPostByUser(Integer userId,Integer pageNumber, Integer pageSize,String sortBy,String sortDir);
 	
 	//getAllPostByCategory
-	List<PostDto> getPostByCategory(Integer categoryId);
+	PostResponse getPostByCategory(Integer categoryId,Integer pageNumber, Integer pageSize,String sortBy,String sortDir);
 	
-	List<PostDto> searchPosts(String keyword);
+	
+
+	PostResponse searchPosts(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 	
 }

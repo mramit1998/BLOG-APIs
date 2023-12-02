@@ -16,15 +16,15 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JwtTokenHelper {
-
+	private String secretKey ;
 	public static final long  JWT_TOKEN_VALIDITY = 2 * 60 * 60;
 	@Autowired
     public JwtTokenHelper() {
-		String secretKey = "jwtTokenKey";
+		String secretKey = "my_secret_key_for_bloggin_api_is_very_secret!!!!";
         this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
        
     }
-	private String secretKey ;
+
 	
 	public String extractUsernameFromToken(String token) {
 		return extractClaimFromToken(token, Claims::getSubject);
@@ -58,7 +58,7 @@ public class JwtTokenHelper {
 		return Jwts.builder().setClaims(claims).setSubject(subject)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis()+ JWT_TOKEN_VALIDITY * 1000))
-				.signWith(SignatureAlgorithm.HS512 , secretKey).compact();
+				.signWith(SignatureAlgorithm.HS256 , secretKey).compact();
 	 
 	}
 	

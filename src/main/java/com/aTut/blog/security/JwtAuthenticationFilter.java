@@ -18,7 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import io.jsonwebtoken.ExpiredJwtException;
 
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter{
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	
 	@Autowired
@@ -29,13 +29,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+			throws   ServletException, IOException {
 	
 		
 		//1 . get jwt token from request
 		
 		final String requestTokenHeader = request.getHeader("Authorization");
-		System.out.println(requestTokenHeader);
+	
 		
 		String username = null;
 		String jwtToken = null;
@@ -55,7 +55,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 			System.out.println("JWT Token has expired");	
 		}
 		}else {
-			System.out.println("JWT Token does not begin with Bearer String");
+			if(requestTokenHeader!=null) {
+				System.out.println("JWT Token does not begin with Bearer String");
+				}
 		}
 		
 		//2. validate the token

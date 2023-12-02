@@ -2,17 +2,16 @@ package com.aTut.blog.controllers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.StreamUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -80,21 +79,33 @@ public class PostController {
 	}
 	
 	@GetMapping("/user/{userId}/posts")
-	public ResponseEntity<List<PostDto>> getPostByUser(@PathVariable Integer userId){
-		List<PostDto> postsByUser = this.postService.getPostByUser(userId);
-		return ResponseEntity.ok(postsByUser);
+	public ResponseEntity<PostResponse> getPostByUser(@PathVariable Integer userId,
+			@RequestParam(value ="pageNumber" , defaultValue = AppConstants.PAGE_NUMBER, required = false)Integer pageNumber,
+			@RequestParam(value ="pageSize" , defaultValue = AppConstants.PAGE_SIZE, required = false)Integer pageSize,
+			@RequestParam(value ="sortBy" , defaultValue = AppConstants.SORT_BY_POST, required = false)String sortBy,
+			@RequestParam(value ="sortDir" , defaultValue = AppConstants.SORT_DIR, required = false)String sortDir){
+				PostResponse allPostsByUser = this.postService.getPostByUser(userId,pageNumber,pageSize,sortBy,sortDir);
+		return ResponseEntity.ok(allPostsByUser);
 	}
 	
 	@GetMapping("/category/{categoryId}/posts")
-	public ResponseEntity<List<PostDto>> getPostByCategory(@PathVariable Integer categoryId){
-		List<PostDto> postsByCategory = this.postService.getPostByCategory(categoryId);
+	public ResponseEntity<PostResponse> getPostByCategory(@PathVariable Integer categoryId,
+			@RequestParam(value ="pageNumber" , defaultValue = AppConstants.PAGE_NUMBER, required = false)Integer pageNumber,
+			@RequestParam(value ="pageSize" , defaultValue = AppConstants.PAGE_SIZE, required = false)Integer pageSize,
+			@RequestParam(value ="sortBy" , defaultValue = AppConstants.SORT_BY_POST, required = false)String sortBy,
+			@RequestParam(value ="sortDir" , defaultValue = AppConstants.SORT_DIR, required = false)String sortDir){
+		PostResponse postsByCategory = this.postService.getPostByCategory(categoryId,pageNumber,pageSize,sortBy,sortDir);
 		
 		return ResponseEntity.ok(postsByCategory);
 	}
 	
 	@GetMapping("/posts/search?{keywords}")
-	public ResponseEntity<List<PostDto>> searchPost(@PathVariable String keywords){
-		List<PostDto> postsBykeywords = this.postService.searchPosts(keywords);
+	public ResponseEntity<PostResponse> searchPost(@PathVariable String keywords,
+			@RequestParam(value ="pageNumber" , defaultValue = AppConstants.PAGE_NUMBER, required = false)Integer pageNumber,
+			@RequestParam(value ="pageSize" , defaultValue = AppConstants.PAGE_SIZE, required = false)Integer pageSize,
+			@RequestParam(value ="sortBy" , defaultValue = AppConstants.SORT_BY_POST, required = false)String sortBy,
+			@RequestParam(value ="sortDir" , defaultValue = AppConstants.SORT_DIR, required = false)String sortDir){
+		PostResponse postsBykeywords = this.postService.searchPosts(keywords,pageNumber,pageSize,sortBy,sortDir);
 		return ResponseEntity.ok(postsBykeywords);
 	}
 	
