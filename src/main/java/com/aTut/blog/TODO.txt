@@ -1,0 +1,19 @@
+TODO :
+	 
+ comments must have username and userid and photo - many to many -- doubt
+	 
+
+	 
+	 
+	 
+	 
+	 
+IDEAS
+		reset passsord	 
+	 create api to make user an admin - can be done only by admin
+	 
+	 
+	 comment - post 
+	 user - comment
+	 
+	 

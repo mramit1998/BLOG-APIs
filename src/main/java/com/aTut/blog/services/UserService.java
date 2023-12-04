@@ -23,4 +23,7 @@ public interface UserService {
 // read all user
 	List<UserDto> getAllUsers();
 	
+//register user
+	UserDto registerUser(UserDto userDto);
+	
 }
